@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <title>Вычисляемые свойства и слежение — Vue.js</title>
+        <meta charset="utf-8">
+    <script data-require="vue.js@*" data-semver="10.0.26" src="https://cdn.jsdelivr.net/vue/1.0.26/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+<div id=auth>
+
+<style>
+#result{
+  width:500px;
+  border:1px solid red;
+  margin-left:auto;
+  margin-right:auto;
+}
+</style>
+<label for=#login>login:</lable> <input id=login v-model="login" debounce="500"> <label for=#pass>Password:</label> <input type=password id=pass v-model="pwd" debounce="500">
+
+<label> <input type="checkbox" id="checkbox"  v-model="isLogin" @change="change" >
+ {{ checked }} <br></label>
+ <span v-if="isLogin">
+  вы ввели ( <i>вообще это нельзя показывать</i> ) login:<b>{{login}}</b> pass:<b>{{pwd}}</b><br>
+  <button @click="query()">Login...</button><br>
+ </span>
+ <span v-else>
+  регистрация:</br>
+  <button @click="reg_user()">Регистрация</button><br>
+ </span><br><br>
+
+<div id=result>
+<br>
+<span v-html="html"></span><br>
+message from server: {{message}}
+</div>
+</div>
+<script>
+var url ='https://kolesnikdenis.com/a-level/job1/login.php';
+new Vue({
+  el: '#auth',
+  data: {
+    isLogin: true,
+    auth: 'авторизация:',
+    reg: 'регистрация:',
+    checked: 'регистрация \ авторизация ',
+    login: '',
+    pwd: '',
+    html: '',
+    message: ''
+  },
+   methods: {
+	change: function(u){ this.checked=this.isLogin?this.auth:this.reg },
+	query: function(){
+	 var send_post={auth: {login: this.login, pass:this.pwd }};
+	 this.$http.post(url, send_post, {emulateJSON:true}).then(function(callback){
+	  console.log(callback);
+	  this.html = callback.body.html;
+	  this.message = callback.body.msg;
+  	 })
+ 	},
+	reg_user: function(){
+	 console.log("test");
+	 var send_post={reg: {login: this.login, pass:this.pwd }};
+	 this.$http.post(url, send_post, {emulateJSON:true}).then(function(callback){
+	  console.log(callback);
+	  this.html = callback.body.html;
+	  this.message = callback.body.msg;
+	  //alert('теперь вы можите авторизироватся');
+	 });
+	}
+		
+  }
+})
+</script>
